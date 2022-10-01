@@ -1,0 +1,157 @@
+﻿@page "/mudBlazorData"
+
+@using BlazorApp.Models.MudBlazor
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject HttpClient httpClient
+
+
+@*Tip for present different style settings -> or inside MudTable like Style="width:900px;"*@
+@*<style>
+    .mud-table {
+        width: 700px;
+    }
+</style>*@
+
+
+
+<MudText>MudBlazor DataGrid Example</MudText>
+
+<MudContainer Class="mt-24" MaxWidth="MaxWidth.ExtraLarge" Style="max-height: 95vh; overflow-y: scroll"> 
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<Element>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="table" HorizontalScrollbar="true" Height="350px">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Elements</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="id_field" T="Element">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="nr_field" T="Element">Nr</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="sign_field" T="Element">Sign</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="name_field" T="Element">ContactName</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="position_field" T="Element">Price</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="isActive_field" T="Element">IsActive</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="address_field" T="Element">Address</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="email_field" T="Element">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="register_field" T="Element">Registered</MudTableSortLabel></MudTh>
+            
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Element Id">@context.Id</MudTd>
+            <MudTd DataLabel="Nr">@context.Number</MudTd>
+            <MudTd DataLabel="Sign">@context.Sign</MudTd>
+            <MudTd DataLabel="Name">@context.ContactName</MudTd>
+            <MudTd DataLabel="Position">@context.Price</MudTd>
+            <MudTd DataLabel="IsActive">@context.IsActive</MudTd>
+            <MudTd DataLabel="Address">@context.Address</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Registered">@context.Registered</MudTd>
+           
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+
+</MudContainer>
+
+
+@code {
+    private IEnumerable<Element> pagedData;
+    private MudTable<Element> table;
+    private IEnumerable<Element> elements;
+
+    private int totalItems;
+    private string searchString = null;
+
+
+    //protected override async Task OnInitializedAsync() => elements = await GetElementsAsync();
+
+
+    private async Task<List<Element>> GetElementsAsync()
+    {
+        var itemsFromJson = await httpClient.GetFromJsonAsync<Element[]>("sample-data/testData.json");
+        return itemsFromJson.ToList();
+    }
+
+    /// <summary>
+    /// Here we simulate getting the paged, filtered and ordered data from the server
+    /// </summary>
+    private async Task<TableData<Element>> ServerReload(TableState state)
+    {
+        try
+        {
+            elements = await GetElementsAsync();
+            await Task.Delay(300);
+            elements = elements.Where(element =>
+            {
+                if (string.IsNullOrWhiteSpace(searchString))
+                    return true;
+                if (element.Sign.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (element.ContactName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (element.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (element.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if ($"{element.Number} {element.Price}".Contains(searchString))
+                    return true;
+                return false;
+            }).ToArray();
+            totalItems = elements.Count();
+            switch (state.SortLabel)
+            {
+                case "id_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Id);
+                    break;
+                case "nr_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Number);
+                    break;
+                case "sign_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Sign);
+                    break;
+                case "name_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.ContactName);
+                    break;
+                case "position_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Price);
+                    break;
+                case "isActive_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.IsActive);
+                    break;
+                case "address_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Address);
+                    break;
+                case "email_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Email);
+                    break;
+                case "register_field":
+                    elements = elements.OrderByDirection(state.SortDirection, o => o.Registered);
+                    break;
+            }
+
+            pagedData = elements.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+       
+        return new TableData<Element>() { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private async Task OnSearch(string text)
+    {
+        searchString = text;
+        await table.ReloadServerData();
+    }
+}
