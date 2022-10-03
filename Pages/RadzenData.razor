@@ -1,0 +1,46 @@
+﻿@page "/radzenData"
+@using BlazorApp.Models.MudBlazor
+
+@inject HttpClient httpClient
+
+@inherits MudBlazorData
+
+<RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+    Radzen DataGrid
+</RadzenText>
+<RadzenText TextStyle="TextStyle.Body1" Class="my-4">
+    Display tabular data with ease. Perform paging, sorting and filtering through Entity Framework without extra code.
+</RadzenText>
+
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@elements" TItem="Element" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenDataGridColumn TItem="Element" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+            @*<RadzenDataGridColumn TItem="Element" Title="Photo" Frozen="true" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center" >
+                <Template Context="data">
+                    <RadzenImage Path="@data.Photo" class="rz-gravatar" />
+                </Template>
+            </RadzenDataGridColumn>*@
+            <RadzenDataGridColumn TItem="Element" Property="Number" Title="Number" Frozen="true" Width="160px" />
+            <RadzenDataGridColumn TItem="Element" Property="Sign" Title="Sign" Width="160px" />
+            <RadzenDataGridColumn TItem="Element" Property="ContactName" Title="Contact Name" Width="200px" />
+            <RadzenDataGridColumn TItem="Element" Property="IsActive" Title="IsActive" FormatString="{0:d}" Width="160px" />
+            <RadzenDataGridColumn TItem="Element" Property="Price" Title="Price" Width="120px" />
+            <RadzenDataGridColumn TItem="Element" Property="Address" Title="Address" Width="200px" />
+            <RadzenDataGridColumn TItem="Element" Property="Email" Title="Email" Width="160px" />
+            <RadzenDataGridColumn TItem="Element" Property="Registered" Title="Registered" Width="160px" />
+        </Columns>
+    </RadzenDataGrid>
+
+
+@code {
+    private IEnumerable<Element> elements;
+
+    protected override async Task OnInitializedAsync() => elements = await GetElementsAsync();
+
+    //private async Task<List<Element>> GetElementsAsync()
+    //{
+    //    var itemsFromJson = await httpClient.GetFromJsonAsync<Element[]>("sample-data/testData.json");
+    //    return itemsFromJson.ToList();
+    //}
+}

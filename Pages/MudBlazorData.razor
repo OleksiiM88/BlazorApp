@@ -73,10 +73,7 @@
     private string searchString = null;
 
 
-    //protected override async Task OnInitializedAsync() => elements = await GetElementsAsync();
-
-
-    private async Task<List<Element>> GetElementsAsync()
+    public async Task<List<Element>> GetElementsAsync()
     {
         var itemsFromJson = await httpClient.GetFromJsonAsync<Element[]>("sample-data/testData.json");
         return itemsFromJson.ToList();

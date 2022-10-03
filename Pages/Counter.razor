@@ -6,8 +6,9 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IncrementCount">Click Me</MudButton>
+<button @onclick="IncrementCount">Click me(Blazor)</button>
+<MudButton OnClick="IncrementCount">Click Me(MudBlazor)</MudButton>
+<RadzenButton Click="IncrementCount">Click Me(Radzen)</RadzenButton>
 
 @code {
     private int currentCount = 0;
