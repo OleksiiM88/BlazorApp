@@ -16,11 +16,6 @@
                 Data="@elements" TItem="Element" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
         <Columns>
             <RadzenDataGridColumn TItem="Element" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-            @*<RadzenDataGridColumn TItem="Element" Title="Photo" Frozen="true" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center" >
-                <Template Context="data">
-                    <RadzenImage Path="@data.Photo" class="rz-gravatar" />
-                </Template>
-            </RadzenDataGridColumn>*@
             <RadzenDataGridColumn TItem="Element" Property="Number" Title="Number" Frozen="true" Width="160px" />
             <RadzenDataGridColumn TItem="Element" Property="Sign" Title="Sign" Width="160px" />
             <RadzenDataGridColumn TItem="Element" Property="ContactName" Title="Contact Name" Width="200px" />
@@ -37,10 +32,4 @@
     private IEnumerable<Element> elements;
 
     protected override async Task OnInitializedAsync() => elements = await GetElementsAsync();
-
-    //private async Task<List<Element>> GetElementsAsync()
-    //{
-    //    var itemsFromJson = await httpClient.GetFromJsonAsync<Element[]>("sample-data/testData.json");
-    //    return itemsFromJson.ToList();
-    //}
 }
