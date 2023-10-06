@@ -1,0 +1,30 @@
+﻿@page "/quickGrid"
+
+
+@using BlazorApp.Models.MudBlazor;
+@using Microsoft.AspNetCore.Components.QuickGrid;
+@inject HttpClient httpClient
+
+@inherits MudBlazorData
+
+<PageTitle>QuickGrid</PageTitle>
+
+<QuickGrid Items="@elements.AsQueryable()" Pagination="@paginationState" >
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn Property="c => c.Id" Sortable="true"/>
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn Property="c => c.Number" Sortable="true" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn Property="c => c.Sign" Sortable="true" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn Property="c => c.ContactName" Sortable="true" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn Property="c => c.IsActive" Sortable="true" />
+
+    
+</QuickGrid>
+
+<Paginator State="@paginationState" />
+
+@code {
+    private IEnumerable<Element> elements = new List<Element>();
+
+    PaginationState paginationState = new PaginationState { ItemsPerPage = 15 };
+
+    protected override async Task OnInitializedAsync() => elements = await GetElementsAsync();   
+}
